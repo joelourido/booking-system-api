@@ -1,4 +1,4 @@
-![ER Diagram](docs/ER-Diagram.svg)
+![ER Diagram](ER-Diagram.svg)
 
 
 erDiagram
