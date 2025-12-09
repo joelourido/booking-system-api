@@ -16,6 +16,9 @@ export const MovieController = {
   async getById(req, res) {
     try {
       const id = Number(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid movie ID" });
+      }
       const movie = await MovieModel.getById(id);
       if (!movie) {
         return res.status(404).json({ error: "Movie not found" });
@@ -32,8 +35,6 @@ export const MovieController = {
   async create(req, res) {
     try {
       const { title, release_date, synopsis, duration, img_url, trailer_url } = req.body;
-
-      // Basic validation (you can enhance later)
       if (!title || !release_date) {
         return res.status(400).json({ error: "Missing required fields" });
       }
@@ -59,6 +60,10 @@ export const MovieController = {
     try {
       const id = Number(req.params.id);
       const updates = req.body;
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid movie ID" });
+      }
 
       // Check if movie exists
       const existing = await MovieModel.getById(id);
@@ -79,7 +84,9 @@ export const MovieController = {
   async delete(req, res) {
     try {
       const id = Number(req.params.id);
-
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid movie ID" });
+      }
       // Check if exists
       const existing = await MovieModel.getById(id);
       if (!existing) {

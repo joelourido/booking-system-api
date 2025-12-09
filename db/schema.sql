@@ -9,7 +9,7 @@ CREATE TABLE movie (
 );
 
 CREATE TABLE room (
-	room_id INT PRIMARY KEY,
+	room_id SERIAL PRIMARY KEY,
 	room_capacity INT NOT NULL
 );
 
