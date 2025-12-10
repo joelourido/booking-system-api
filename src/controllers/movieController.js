@@ -16,7 +16,7 @@ export const MovieController = {
   async getById(req, res) {
     try {
       const id = Number(req.params.id);
-      if (isNaN(id)) {
+      if (!Number.isInteger(id)) {
         return res.status(400).json({ error: "Invalid movie ID" });
       }
       const movie = await MovieModel.getById(id);
@@ -35,8 +35,16 @@ export const MovieController = {
   async create(req, res) {
     try {
       const { title, release_date, synopsis, duration, img_url, trailer_url } = req.body;
-      if (!title || !release_date) {
-        return res.status(400).json({ error: "Missing required fields" });
+      // Check title, release_date and duration fields
+      if (!title || title.trim() === "") {
+        return res.status(400).json({ error: "Movie title can't be empty" });
+      }
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (release_date !== undefined && !dateRegex.test(release_date)) {
+        return res.status(400).json({ error: "release_date must be in YYYY-MM-DD format" });
+      }
+      if (duration !== undefined && !Number.isInteger(Number(duration))) {
+        return res.status(400).json({ error: "Duration must be an integer number" });
       }
 
       const newMovie = await MovieModel.create({
@@ -59,10 +67,21 @@ export const MovieController = {
   async update(req, res) {
     try {
       const id = Number(req.params.id);
-      const updates = req.body;
+      const { title, release_date, synopsis, duration, img_url, trailer_url } = req.body;
       
-      if (isNaN(id)) {
+      // Check movie ID, title, release_date and duration fields
+      if (!Number.isInteger(id)) {
         return res.status(400).json({ error: "Invalid movie ID" });
+      }
+      if (title !== undefined && title.trim() === "") {
+        return res.status(400).json({ error: "Movie title can't be empty" });
+      }
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (release_date !== undefined && !dateRegex.test(release_date)) {
+        return res.status(400).json({ error: "release_date must be in YYYY-MM-DD format" });
+      }
+      if (duration !== undefined && !Number.isInteger(Number(duration))) {
+        return res.status(400).json({ error: "Duration must be an integer number" });
       }
 
       // Check if movie exists
@@ -71,7 +90,7 @@ export const MovieController = {
         return res.status(404).json({ error: "Movie not found" });
       }
 
-      const updatedMovie = await MovieModel.update(id, updates);
+      const updatedMovie = await MovieModel.update(id, req.body);
 
       return res.status(200).json(updatedMovie);
     } catch (error) {
@@ -84,7 +103,7 @@ export const MovieController = {
   async delete(req, res) {
     try {
       const id = Number(req.params.id);
-      if (isNaN(id)) {
+      if (!Number.isInteger(id)) {
         return res.status(400).json({ error: "Invalid movie ID" });
       }
       // Check if exists

@@ -1,6 +1,6 @@
 CREATE TABLE movie (
 	movie_id SERIAL PRIMARY KEY,
-	title TEXT,
+	title TEXT NOT NULL,
 	release_date DATE,
 	synopsis TEXT,
 	duration INT,

@@ -5,7 +5,7 @@ export const RoomController = {
   async getAll(req, res) {
     try {
       const rooms = await RoomModel.getAll();
-        return res.status(200).json(rooms);
+      return res.status(200).json(rooms);
     } catch (error) {
       console.error("Error fetching rooms:", error);
       return res.status(500).json({ error: "Internal server error"});
@@ -16,15 +16,13 @@ export const RoomController = {
   async getById(req, res) {
     try {
       const id = Number(req.params.id);
-      if (isNaN(id)) {
+      if (!Number.isInteger(id)) {
         return res.status(400).json({ error: "Invalid room ID" });
       }
       const room = await RoomModel.getById(id);
       if (!room) {
         return res.status(404).json({ error: "Room not found"});
       }
-
-
 
       return res.status(200).json(room);
     }  catch(error) {
@@ -36,13 +34,14 @@ export const RoomController = {
   // POST api/rooms
   async create(req, res) {
     try {
-      const { capacity } = req.body;
-      if (!capacity || isNaN(Number(capacity))) {
-        return res.status(400).json({ error: "Invalid or missing capacity" });
+      const { room_capacity } = req.body;
+      // Check room capacity field
+      if (!room_capacity || !Number.isInteger(Number(room_capacity))) {
+        return res.status(400).json({ error: "Invalid or missing room capacity" });
       }
 
       const newRoom = await RoomModel.create({
-        capacity: Number(capacity)
+        room_capacity: Number(room_capacity)
       });
 
       return res.status(201).json(newRoom);
@@ -55,34 +54,39 @@ export const RoomController = {
   // PUT api/rooms/:id
   async update(req, res) {
     try {
-    const id = Number(req.params.id);
-    const updates = req.body;
-    
-    if (isNaN(id)) {
-      return res.status(400).json({ error: "Invalid room ID" });
-    }
+      const id = Number(req.params.id);
+      const { room_capacity } = req.body;
 
-    // Check if room exists
-    const existing = await RoomModel.getById(id);
-    if (!existing) {
-      return res.status(404).json({ error: "Room not found" });
-    }
-    
+      // Check room ID and capacity field
+      if (!Number.isInteger(id)) {
+        return res.status(400).json({ error: "Invalid room ID" });
+      }
+      if (!room_capacity || !Number.isInteger(Number(room_capacity))) {
+        return res.status(400).json({ error: "Invalid or missing room capacity" });
+      }
 
-    const updatedRoom = await RoomModel.update(id, updates);
+      // Check if room exists
+      const existing = await RoomModel.getById(id);
+      if (!existing) {
+        return res.status(404).json({ error: "Room not found" });
+      }
 
-    return res.status(200).json(updatedRoom);
+
+      const updatedRoom = await RoomModel.update(id, req.body);
+
+      return res.status(200).json(updatedRoom);
     } catch (error) {
       console.error("Error updating room:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },
 
+
   // DELETE api/rooms/:id
   async delete(req, res) {
     try {
       const id = Number(req.params.id);
-      if (isNaN(id)) {
+      if (!Number.isInteger(id)) {
         return res.status(400).json({ error: "Invalid room ID" });
       }
       // Check if exists
