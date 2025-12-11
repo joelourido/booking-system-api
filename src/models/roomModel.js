@@ -16,26 +16,27 @@ export const RoomModel = {
   },
 
   // Create a new room
-  async create({ room_capacity }) {
+  async create({ room_name, room_capacity }) {
     const query = `
-      INSERT INTO room (room_capacity)
-      VALUES ($1)
+      INSERT INTO room (room_name, room_capacity)
+      VALUES ($1, $2)
       RETURNING *;
     `;
-    const values = [room_capacity];
+    const values = [room_name, room_capacity];
     const { rows } = await pool.query(query, values);
     return rows[0];
   },
 
   // Update a room
-  async update(room_id, { room_capacity }) {
+  async update(room_id, { room_name, room_capacity }) {
     const query = `
       UPDATE room
-      SET room_capacity = $1
-      WHERE room_id = $2
+      SET room_name = COALESCE($1, room_name),
+      room_capacity = COALESCE($2, room_capacity)
+      WHERE room_id = $3
       RETURNING *;
     `;
-    const values = [room_capacity, room_id];
+    const values = [room_name, room_capacity, room_id];
     const { rows } = await pool.query(query, values);
     return rows[0];
 },

@@ -34,18 +34,26 @@ export const RoomController = {
   // POST api/rooms
   async create(req, res) {
     try {
-      const { room_capacity } = req.body;
-      // Check room capacity field
-      if (!room_capacity || !Number.isInteger(Number(room_capacity))) {
+      const { room_name, room_capacity } = req.body;
+      // Check room's room_name and capacity fields
+      if (!room_capacity || !Number.isInteger(Number(room_capacity)) || room_capacity <= 0 ) {
         return res.status(400).json({ error: "Invalid or missing room capacity" });
+      }
+      if (!room_name || typeof room_name !== 'string' || room_name.trim() === "") {
+       return res.status(400).json({ error: "Missing or invalid room name" });
       }
 
       const newRoom = await RoomModel.create({
+        room_name: room_name,
         room_capacity: Number(room_capacity)
       });
 
       return res.status(201).json(newRoom);
     } catch (error) {
+      // room_name field is unique, retrieve error message if a room with that name already exists.
+      if (error.code === '23505') {
+        return res.status(409).json({ error: "A room with this name already exists" });
+      }
       console.error("Error creating room:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
@@ -55,15 +63,21 @@ export const RoomController = {
   async update(req, res) {
     try {
       const id = Number(req.params.id);
-      const { room_capacity } = req.body;
+      const { room_name, room_capacity } = req.body;
 
-      // Check room ID and capacity field
+      // Check room ID, name and capacity fields
       if (!Number.isInteger(id)) {
         return res.status(400).json({ error: "Invalid room ID" });
       }
-      if (!room_capacity || !Number.isInteger(Number(room_capacity))) {
-        return res.status(400).json({ error: "Invalid or missing room capacity" });
+      // Validation for name (only if provided)
+      if ((room_name !== undefined)&&(!room_name || typeof room_name !== 'string' || room_name.trim() === "")) {
+        return res.status(400).json({ error: "Missing or invalid room name" });
       }
+      // Validation for capacity (only if provided)
+      if (room_capacity !== undefined && (!Number.isInteger(Number(room_capacity)) || Number(room_capacity) <= 0)) {
+        return res.status(400).json({ error: "Invalid room capacity" });
+      }
+      
 
       // Check if room exists
       const existing = await RoomModel.getById(id);
@@ -72,10 +86,17 @@ export const RoomController = {
       }
 
 
-      const updatedRoom = await RoomModel.update(id, req.body);
+      const updatedRoom = await RoomModel.update(id, { 
+        room_name, 
+        room_capacity 
+      });
 
       return res.status(200).json(updatedRoom);
     } catch (error) {
+      // room_name field is unique, retrieve error message if a room with that name already exists.
+      if (error.code === '23505') {
+        return res.status(409).json({ error: "A room with this name already exists" });
+      }
       console.error("Error updating room:", error);
       return res.status(500).json({ error: "Internal server error" });
     }

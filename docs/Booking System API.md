@@ -37,9 +37,9 @@ Admin only functions:
 - POST /api/movies - Add a movie
 - PUT /api/movies/:id - Edit a movie
 - DELETE /api/movies/:id - Delete a movie
-- POST /api/session/ - Add a session
-- PUT /api/session/:id - Edit a session
-- DELETE /api/session/:id - Delete a session
+- POST /api/sessions/ - Add a session
+- PUT /api/sessions/:id - Edit a session
+- DELETE /api/sessions/:id - Delete a session
 - GET /api/sessions/ - Retrieve all sessions (with filtering options)
 - GET /api/bookings - Retrieve all bookings (made by all users)
 - DELETE /api/bookings/:id - Cancel a booking (made by any user)
