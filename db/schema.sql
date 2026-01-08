@@ -17,8 +17,12 @@ CREATE TABLE room (
 CREATE TABLE seat (
 	seat_id SERIAL PRIMARY KEY,
 	room_id INT REFERENCES room(room_id) ON DELETE CASCADE,
+	row VARCHAR(8) NOT NULL,
 	seat_number INT NOT NULL,
-	row VARCHAR(8) NOT NULL
+
+	CONSTRAINT unique_seat_per_room
+        UNIQUE (room_id, row, seat_number)
+	
 );
 
 CREATE TABLE session (
