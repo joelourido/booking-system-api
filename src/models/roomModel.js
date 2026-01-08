@@ -1,7 +1,7 @@
 import { pool } from '../db.js';
 
 export const RoomModel = {
-  // Get all roomses
+  // Get all rooms
   async getAll() {
     const query = `SELECT * FROM room ORDER BY room_id`;
     const { rows } = await pool.query(query);

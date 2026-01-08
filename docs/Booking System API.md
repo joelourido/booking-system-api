@@ -19,7 +19,7 @@ Administrator:
 # Database Ideas
 The Database will be composed by the following tables.
 - **Movie table**: A table in which the movies and their metadata (Title, Year of release, Rating, Description etc).
-- **Theater Room table**: A table in which the rooms of the theater will be defined (Number of the room, number of available seats.
+- **Theater Room table**: A table in which the rooms of the theater will be defined (Number of the room, number of available seats).
 - **Users table**: A table where all the user data are stored (Name, login information, reservations).
 - **Administrator table**: A table where the administrator users data are stored (Name, login information).
 - **Session table**: A table that will store information about the movie sessions, using data from the movies table and theater room table.
