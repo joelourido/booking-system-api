@@ -99,15 +99,15 @@ async function seedSessions() {
   console.log("Sessions seeded");
 }
 
-async function seedUsers() {
-  const query = `
-    INSERT INTO app_user (email, password_hash) 
-    VALUES ($1, $2)
-    ON CONFLICT (email) DO NOTHING;
-  `;
-  await pool.query(query, ['test@example.com', 'dummyhash']);
-  console.log('Users seeded');
-}
+// async function seedUsers() {
+//   const query = `
+//     INSERT INTO app_user (email, password_hash) 
+//     VALUES ($1, $2)
+//     ON CONFLICT (email) DO NOTHING;
+//   `;
+//   await pool.query(query, ['test@example.com', 'dummyhash']);
+//   console.log('Users seeded');
+// }
 
 async function main() {
   try {

@@ -169,5 +169,26 @@ export const BookingModel = {
     `;
     const { rows } = await pool.query(query, [booking_id]);
     return rows.length > 0;
-  }
+  },
+
+  // Gets all booking for a given user
+  async findByUser(user_id) {
+    const query = `
+      SELECT 
+        b.booking_id,
+        b.session_id,
+        b.status,
+        b.expires_at,
+        b.created_at,
+        ARRAY_AGG(bs.seat_id) as seats
+      FROM booking b
+      LEFT JOIN booking_seat bs ON b.booking_id = bs.booking_id
+      WHERE b.user_id = $1
+      GROUP BY b.booking_id
+      ORDER BY b.created_at DESC;
+    `;
+    
+    const { rows } = await pool.query(query, [user_id]);
+    return rows;
+  },
 };

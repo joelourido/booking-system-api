@@ -36,7 +36,9 @@ CREATE TABLE session (
 CREATE TABLE app_user (
 	user_id SERIAL PRIMARY KEY,
 	email VARCHAR(255) UNIQUE NOT NULL,
-	password_hash VARCHAR(255) NOT NULL
+	password_hash VARCHAR(255) NOT NULL,
+	full_name VARCHAR(100),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE booking (

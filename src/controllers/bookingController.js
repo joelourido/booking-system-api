@@ -5,8 +5,7 @@ export const BookingController = {
   async create(req, res) {
     try {
       
-      // TEMP until auth is implemented
-      const user_id = req.user?.user_id ?? 1;
+      const user_id = req.user.user_id;
 
       let { session_id, seat_ids } = req.body;
 
@@ -95,5 +94,20 @@ export const BookingController = {
       console.error("Cancel booking error:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
-  }
+  },
+
+  // GET /api/bookings
+  async list(req, res) {
+    try {
+      // Get the user ID from the token
+      const user_id = req.user.user_id;
+
+      const bookings = await BookingModel.findByUser(user_id);
+
+      return res.status(200).json(bookings);
+    } catch (error) {
+      console.error("List bookings error:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
 };
