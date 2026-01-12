@@ -1,5 +1,6 @@
 import { SeatModel } from "../models/seatModel.js";
 import { RoomModel } from "../models/roomModel.js";
+import { SessionModel } from "../models/sessionModel.js";
 
 export const SeatController = {
 
@@ -98,6 +99,28 @@ export const SeatController = {
       });
     } catch (error) {
       console.error("Error deleting seats:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  async getBySession(req, res) {
+    try {
+      const sessionId = Number(req.params.sessionId);
+
+      if (!Number.isInteger(sessionId)) {
+        return res.status(400).json({ error: "Invalid session ID" });
+      }
+
+      const session = await SessionModel.getById(sessionId);
+      if (!session) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+
+      const seats = await SeatModel.getBySession(sessionId);
+      return res.status(200).json(seats);
+
+    } catch (error) {
+      console.error("Error fetching session seats:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   }

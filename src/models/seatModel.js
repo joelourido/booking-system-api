@@ -53,9 +53,43 @@ export const SeatModel = {
     return created;
   },
 
-//   Delete all the seats from a given room
+  //   Delete all the seats from a given room
   async deleteByRoom(room_id) {
     const query = `DELETE FROM seat WHERE room_id = $1;`;
     await pool.query(query, [room_id]);
+  },
+
+  // Get seats for a session with availability status
+  async getBySession(session_id) {
+    const query = `
+      SELECT
+        s.seat_id,
+        s.row,
+        s.seat_number,
+        COALESCE(bs.status, 'AVAILABLE') AS status
+      FROM seat s
+      JOIN session sess ON sess.room_id = s.room_id
+      LEFT JOIN booking_seat bs
+        ON bs.seat_id = s.seat_id
+        AND bs.session_id = sess.session_id
+        AND (
+          bs.status = 'CONFIRMED'
+          OR (
+            bs.status = 'PENDING'
+            AND EXISTS (
+              SELECT 1
+              FROM booking b
+              WHERE b.booking_id = bs.booking_id
+              AND b.expires_at > NOW()
+            )
+          )
+        )
+      WHERE sess.session_id = $1
+      ORDER BY s.row, s.seat_number;
+    `;
+
+    const { rows } = await pool.query(query, [session_id]);
+    return rows;
   }
+
 };

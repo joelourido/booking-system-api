@@ -2,6 +2,7 @@ import { MovieModel } from '../src/models/movieModel.js';
 import { RoomModel } from '../src/models/roomModel.js';
 import { SeatModel } from '../src/models/seatModel.js';
 import { SessionModel } from '../src/models/sessionModel.js';
+import { pool } from '../src/db.js';
 
 async function seedMovies() {
   const movies = [
@@ -98,6 +99,15 @@ async function seedSessions() {
   console.log("Sessions seeded");
 }
 
+async function seedUsers() {
+  const query = `
+    INSERT INTO app_user (email, password_hash) 
+    VALUES ($1, $2)
+    ON CONFLICT (email) DO NOTHING;
+  `;
+  await pool.query(query, ['test@example.com', 'dummyhash']);
+  console.log('Users seeded');
+}
 
 async function main() {
   try {
@@ -105,6 +115,8 @@ async function main() {
     await seedRooms();
     await seedSeats();
     await seedSessions();
+    await seedUsers();
+
     console.log("Seeding complete");
     process.exit(0);
   } catch (error) {

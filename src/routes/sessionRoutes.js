@@ -1,5 +1,6 @@
 import express from "express";
 import { SessionController } from "../controllers/sessionController.js";
+import { SeatController } from "../controllers/seatController.js";
 
 const router = express.Router();
 
@@ -17,5 +18,8 @@ router.put("/:id", SessionController.update);
 
 // DELETE api/sessions/:id
 router.delete("/:id", SessionController.delete);
+
+// Get seats for a given session
+router.get("/:sessionId/seats", SeatController.getBySession);
 
 export default router;

@@ -43,14 +43,27 @@ CREATE TABLE booking (
 	booking_id SERIAL PRIMARY KEY,
 	user_id INT REFERENCES app_user(user_id) ON DELETE CASCADE,
 	session_id INT REFERENCES session(session_id) ON DELETE CASCADE,
-	booking_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	expires_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE booking_seat (
+	booking_seat_id SERIAL PRIMARY KEY,
 	booking_id INT REFERENCES booking(booking_id) ON DELETE CASCADE,
+	session_id INT REFERENCES session(session_id) ON DELETE CASCADE,
 	seat_id INT REFERENCES seat(seat_id) ON DELETE CASCADE,
-	PRIMARY KEY (booking_id, seat_id)
+	status VARCHAR(20) NOT NULL
 );
+
+-- Prevent double booking
+CREATE UNIQUE INDEX uniq_active_seat
+ON booking_seat (session_id, seat_id)
+WHERE status IN ('PENDING', 'CONFIRMED');
+
+-- Performance indexes
+CREATE INDEX idx_booking_status ON booking (status);
+CREATE INDEX idx_booking_seat_session ON booking_seat (session_id);
 
 CREATE TABLE admin (
 	admin_id SERIAL PRIMARY KEY,
