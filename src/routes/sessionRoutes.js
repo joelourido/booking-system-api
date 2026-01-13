@@ -19,7 +19,7 @@ router.put("/:id", SessionController.update);
 // DELETE api/sessions/:id
 router.delete("/:id", SessionController.delete);
 
-// Get seats for a given session
-router.get("/:sessionId/seats", SeatController.getBySession);
+// GET /api/sessions/:id/seats
+router.get("/:id/seats", SessionController.getSeats);
 
 export default router;

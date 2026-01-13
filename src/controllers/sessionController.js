@@ -193,5 +193,19 @@ export const SessionController = {
       console.error("Error deleting session:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
+  },
+
+  // GET api/sessions/:id/seats
+  async getSeats(req, res) {
+    try {
+      const session_id = Number(req.params.id);
+      if (!Number.isInteger(session_id)) return res.status(400).json({ error: "Invalid session ID" });
+
+      const seats = await SessionModel.getSeatMap(session_id);
+      return res.status(200).json(seats);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
 };

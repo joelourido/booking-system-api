@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import movieRoutes from "./src/routes/movieRoutes.js";
 import roomRoutes from "./src/routes/roomRoutes.js"
 import sessionRoutes from "./src/routes/sessionRoutes.js"
@@ -10,6 +11,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// cors
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
 app.use(express.json());
 app.use("/api/movies", movieRoutes);

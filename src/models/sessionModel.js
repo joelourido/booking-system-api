@@ -91,5 +91,32 @@ export const SessionModel = {
     }
     const { rows } = await pool.query(query, values);
     return rows.length > 0; 
+  },
+
+  // Get all seats for a session with their status
+  async getSeatMap(session_id) {
+    const query = `
+      SELECT 
+        s.seat_id,
+        s.row,
+        s.seat_number
+        CASE 
+          WHEN bs.status = 'CONFIRMED' THEN 'TAKEN'
+          WHEN bs.status = 'PENDING' AND b.expires_at > NOW() THEN 'TAKEN'
+          ELSE 'AVAILABLE'
+        END as status
+      FROM seat s
+      JOIN session sess ON s.room_id = sess.room_id
+      LEFT JOIN booking_seat bs 
+        ON s.seat_id = bs.seat_id 
+        AND bs.session_id = $1
+      LEFT JOIN booking b 
+        ON bs.booking_id = b.booking_id
+      WHERE sess.session_id = $1
+      ORDER BY s.row_number, s.seat_number;
+    `;
+    
+    const { rows } = await pool.query(query, [session_id]);
+    return rows;
   }
 };
