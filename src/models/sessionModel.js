@@ -94,14 +94,15 @@ export const SessionModel = {
   },
 
   // Get all seats for a session with their status
-  async getSeatMap(session_id) {
+async getSeatMap(session_id) {
     const query = `
       SELECT 
         s.seat_id,
         s.row,
-        s.seat_number
+        s.seat_number, -- <--- Added Comma here
         CASE 
           WHEN bs.status = 'CONFIRMED' THEN 'TAKEN'
+          -- Check if pending AND strictly valid (not expired)
           WHEN bs.status = 'PENDING' AND b.expires_at > NOW() THEN 'TAKEN'
           ELSE 'AVAILABLE'
         END as status
@@ -113,10 +114,22 @@ export const SessionModel = {
       LEFT JOIN booking b 
         ON bs.booking_id = b.booking_id
       WHERE sess.session_id = $1
-      ORDER BY s.row_number, s.seat_number;
+      ORDER BY s.row, s.seat_number;
     `;
     
     const { rows } = await pool.query(query, [session_id]);
     return rows;
-  }
+  },
+
+  // Get session by movie id
+  async getByMovieId(movieId) {
+    const query = `
+      SELECT * FROM session 
+      WHERE movie_id = $1 
+      AND start_time > NOW() -- Hide past sessions
+      ORDER BY start_time ASC
+    `;
+    const result = await pool.query(query, [movieId]);
+    return result.rows;
+  },
 };

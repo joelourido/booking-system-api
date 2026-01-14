@@ -7,7 +7,22 @@ export const SessionController = {
   // GET api/sessions
   async getAll(req, res) {
     try {
-      const sessions = await SessionModel.getAll();
+      // Check if the frontend sent a filter (movie id)
+      const { movie_id } = req.query;
+      let sessions;
+
+      if (movie_id) {
+        // Validate the movie id if there is one.
+        if (!Number.isInteger(Number(movie_id))) {
+          return res.status(400).json({ error: "Invalid movie ID" });
+        }
+        // Fetch specific sessions by movie id
+        sessions = await SessionModel.getByMovieId(movie_id);
+      } else {
+        // Fetch every session (Default)
+        sessions = await SessionModel.getAll();
+      }
+
       return res.status(200).json(sessions);
     } catch (error) {
       console.error("Error fetching sessions:", error);

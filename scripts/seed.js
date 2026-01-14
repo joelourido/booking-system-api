@@ -68,35 +68,54 @@ async function seedSessions() {
   const movies = await MovieModel.getAll();
   const rooms = await RoomModel.getAll();
 
-  const sessionsData = [
-    {
-      movie_id: movies[0].movie_id,
-      room_id: rooms[0].room_id,
-      start_time: "2026-01-10 18:00:00",
-    },
-    {
-      movie_id: movies[1].movie_id,
-      room_id: rooms[1].room_id,
-      start_time: "2026-01-10 20:30:00",
-    },
-  ];
-
-  for (const session of sessionsData) {
-    const movie = movies.find(m => m.movie_id === session.movie_id);
-
-    const startDate = new Date(session.start_time);
-    const endDate = new Date(startDate.getTime());
-    endDate.setMinutes(startDate.getMinutes() + movie.duration);
-
-    await SessionModel.create({
-      movie_id: session.movie_id,
-      room_id: session.room_id,
-      start_time: startDate,
-      end_time: endDate
-    });
+  if (movies.length === 0 || rooms.length === 0) {
+    console.error("Error: Need movies and rooms before seeding sessions.");
+    return;
   }
 
-  console.log("Sessions seeded");
+  const daysToSeed = 365;
+  let totalSessions = 0;
+
+  console.log(`Starting seed for the next ${daysToSeed} days...`);
+
+  // Loop through the days
+  for (let i = 0; i < daysToSeed; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+    
+    // Store the day so we know when we've crossed midnight
+    const targetDay = date.getDate();
+
+    // Loop through rooms/movies
+    for (let j = 0; j < (movies.length); j++) {
+      const movie = movies[j];
+      const room = rooms[j];
+
+      // Start at 10:00
+      let currentStartTime = new Date(date);
+      currentStartTime.setHours(10, 0, 0, 0);
+
+      // Create sessions until 22:00 of the same day
+      while (currentStartTime.getHours() <= 22 && currentStartTime.getDate() === targetDay) {
+        
+        const endTime = new Date(currentStartTime.getTime() + movie.duration * 60000);
+
+        await SessionModel.create({
+          movie_id: movie.movie_id,
+          room_id: room.room_id,
+          start_time: new Date(currentStartTime),
+          end_time: endTime
+        });
+
+        totalSessions++;
+        
+        // Advance 3 hours
+        currentStartTime.setHours(currentStartTime.getHours() + 3);
+      }
+    }
+  }
+
+  console.log(`Success! Created ${totalSessions} sessions for the next ${daysToSeed} days.`);
 }
 
 // async function seedUsers() {
@@ -115,7 +134,7 @@ async function main() {
     await seedRooms();
     await seedSeats();
     await seedSessions();
-    await seedUsers();
+    // await seedUsers();
 
     console.log("Seeding complete");
     process.exit(0);
