@@ -9,6 +9,22 @@ export const BookingModel = {
 
     try {
       await client.query("BEGIN");
+      
+      // Mark expired pending books as expired
+      await client.query(`
+        UPDATE booking 
+        SET status = 'EXPIRED' 
+        WHERE status = 'PENDING' 
+        AND expires_at < NOW()
+      `);
+
+      // Free up the expired seats by deleting them from the booking_seat table 
+      await client.query(`
+        DELETE FROM booking_seat 
+        WHERE booking_id IN (
+          SELECT booking_id FROM booking WHERE status = 'EXPIRED'
+        )
+      `);
 
       // Lock and validate seats to ensure they aren't taken
       const lockSeatsQuery = `
@@ -21,15 +37,7 @@ export const BookingModel = {
         WHERE s.seat_id = ANY($2)
           AND (
             bs.status = 'CONFIRMED'
-            OR (
-              bs.status = 'PENDING'
-              AND EXISTS (
-                SELECT 1
-                FROM booking b
-                WHERE b.booking_id = bs.booking_id
-                AND b.expires_at > NOW()
-              )
-            )
+            OR bs.status = 'PENDING'
           )
         FOR UPDATE;
       `;
@@ -123,7 +131,8 @@ export const BookingModel = {
          return booking; // Already confirmed
       }
 
-      if (new Date(booking.expires_at) < now) {
+      // Booking is expired 
+      if (booking.status === 'EXPIRED' || new Date(booking.expires_at) < now) {
         throw new Error("Booking expired");
       }
 
@@ -162,13 +171,30 @@ export const BookingModel = {
 
   // Deletes a booking
   async cancelBooking(booking_id) {
-    const query = `
-      DELETE FROM booking 
-      WHERE booking_id = $1 
-      RETURNING booking_id
-    `;
-    const { rows } = await pool.query(query, [booking_id]);
-    return rows.length > 0;
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        
+        // Delete seats from booking_seat
+        await client.query('DELETE FROM booking_seat WHERE booking_id = $1', [booking_id]);
+        
+        // Set the booking as cancelled
+        const query = `
+          UPDATE booking 
+          SET status = 'CANCELLED' 
+          WHERE booking_id = $1 
+          RETURNING booking_id
+        `;
+        const { rows } = await client.query(query, [booking_id]);
+        
+        await client.query('COMMIT');
+        return rows.length > 0;
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
   },
 
   // Gets all booking for a given user
