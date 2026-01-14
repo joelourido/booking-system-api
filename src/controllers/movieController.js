@@ -34,7 +34,7 @@ export const MovieController = {
   // POST api/movies
   async create(req, res) {
     try {
-      const { title, release_date, synopsis, duration, img_url, trailer_url } = req.body;
+      const { title, release_date, synopsis, duration, img_url, yt_id } = req.body;
       // Check title, release_date and duration fields
       if (!title || title.trim() === "") {
         return res.status(400).json({ error: "Movie title can't be empty" });
@@ -53,7 +53,7 @@ export const MovieController = {
         synopsis,
         duration,
         img_url,
-        trailer_url
+        yt_id
       });
 
       return res.status(201).json(newMovie);
@@ -67,7 +67,7 @@ export const MovieController = {
   async update(req, res) {
     try {
       const id = Number(req.params.id);
-      const { title, release_date, synopsis, duration, img_url, trailer_url } = req.body;
+      const { title, release_date, synopsis, duration, img_url, yt_id } = req.body;
       
       // Check movie ID, title, release_date and duration fields
       if (!Number.isInteger(id)) {

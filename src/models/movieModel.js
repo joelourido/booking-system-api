@@ -16,20 +16,20 @@ export const MovieModel = {
   },
 
   // Create a new movie entry
-  async create({ title, release_date, synopsis, duration, img_url, trailer_url }) {
+  async create({ title, release_date, synopsis, duration, img_url, yt_id }) {
     const query = 
       `
-      INSERT INTO movie (title, release_date, synopsis, duration, img_url, trailer_url)
+      INSERT INTO movie (title, release_date, synopsis, duration, img_url, yt_id)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
       `;
-      const values = [title, release_date, synopsis, duration, img_url, trailer_url]
+      const values = [title, release_date, synopsis, duration, img_url, yt_id]
       const {rows} = await pool.query(query, values);
       return rows[0];
   },
 
   // Update a movie entry
-  async update(movie_id, { title, release_date, synopsis, duration, img_url, trailer_url }) {
+  async update(movie_id, { title, release_date, synopsis, duration, img_url, yt_id }) {
     const query = 
       `
       UPDATE movie SET
@@ -38,11 +38,11 @@ export const MovieModel = {
         synopsis = COALESCE($3, synopsis),
         duration = COALESCE($4, duration),
         img_url = COALESCE($5, img_url),
-        trailer_url = COALESCE($6, trailer_url)
+        yt_id = COALESCE($6, yt_id)
       WHERE movie_id = $7
       RETURNING *
       `;
-    const values = [title, release_date, synopsis, duration, img_url, trailer_url, movie_id]
+    const values = [title, release_date, synopsis, duration, img_url, yt_id, movie_id]
     const {rows} = await pool.query(query, values);
     return rows[0];
   },

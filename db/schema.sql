@@ -5,7 +5,7 @@ CREATE TABLE movie (
 	synopsis TEXT,
 	duration INT,
 	img_url VARCHAR(255),
-	trailer_url VARCHAR(255)
+	yt_id VARCHAR(255)
 );
 
 CREATE TABLE room (

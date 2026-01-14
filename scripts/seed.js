@@ -6,16 +6,16 @@ import { pool } from '../src/db.js';
 
 async function seedMovies() {
   const movies = [
-    { title: "Parasite", release_date: "2019-11-01" , duration: 133 },
-    { title: "Interstellar", release_date: "2014-11-07", duration: 169 },
-    { title: "Barbie", release_date: "2023-07-21", duration: 114 },
-    { title: "Fight Club", release_date: "1999-10-15", duration: 139 },
-    { title: "La La Land", release_date: "2016-12-16", duration: 129 },
-    { title: "Whiplash", release_date: "2014-10-10", duration: 107 },
-    { title: "Everything Everywhere All at Once", release_date: "2022-04-08", duration: 140 },
-    { title: "The Truman Show", release_date: "1998-06-01", duration: 103 },
-    { title: "Pulp Fiction", release_date: "1994-10-14", duration: 154 },
-    { title: "Oppenheimer", release_date: "2023-07-21", duration: 181 }
+    { title: "Parasite", release_date: "2019-11-01" , synopsis: "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.", duration: 133, img_url: "https://m.media-amazon.com/images/M/MV5BYjk1Y2U4MjQtY2ZiNS00OWQyLWI3MmYtZWUwNmRjYWRiNWNhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "5xH0HfJHsaY"},
+    { title: "Interstellar", release_date: "2014-11-07", synopsis: "When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans.", duration: 169, img_url: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "zSWdZVtXT7E"},
+    { title: "Barbie", release_date: "2023-07-21", synopsis: "Barbie and Ken are having the time of their lives in the seemingly perfect world of Barbie Land. However, when they get a chance to go to the outside world, they soon discover the joys and perils of living among regular humans.", duration: 114, img_url: "https://m.media-amazon.com/images/M/MV5BYjI3NDU0ZGYtYjA2YS00Y2RlLTgwZDAtYTE2YTM5ZjE1M2JlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "pBk4NYhWNMM"},
+    { title: "Fight Club", release_date: "1999-10-15", synopsis: "An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.", duration: 139, img_url: "https://m.media-amazon.com/images/M/MV5BOTgyOGQ1NDItNGU3Ny00MjU3LTg2YWEtNmEyYjBiMjI1Y2M5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "qtRKdVHc-cE"},
+    { title: "La La Land", release_date: "2016-12-16", synopsis: "When Sebastian, a pianist, and Mia, an actress, follow their passion and achieve success in their respective fields, they find themselves torn between their love for each other and their careers.", duration: 129, img_url: "https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@._V1_FMjpg_UX1000_.jpg", yt_id: "0pdqf4P9MB8"},
+    { title: "Whiplash", release_date: "2014-10-10", synopsis: "A promising young drummer enrolls at a cut-throat music conservatory where his dreams of greatness are mentored by an instructor who will stop at nothing to realize a student's potential.", duration: 107, img_url: "https://m.media-amazon.com/images/M/MV5BMDFjOWFkYzktYzhhMC00NmYyLTkwY2EtYjViMDhmNzg0OGFkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "7d_jQycdQGo"},
+    { title: "Everything Everywhere All at Once", release_date: "2022-04-08", synopsis: "A middle-aged Chinese immigrant is swept up into an insane adventure in which she alone can save existence by exploring other universes and connecting with the lives she could have led.", duration: 140, img_url: "https://m.media-amazon.com/images/M/MV5BOWNmMzAzZmQtNDQ1NC00Nzk5LTkyMmUtNGI2N2NkOWM4MzEyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "wxN1T1uxQ2g"},
+    { title: "The Truman Show", release_date: "1998-06-01", synopsis: "An insurance salesman begins to suspect that his whole life is actually some sort of reality TV show.", duration: 103, img_url: "https://m.media-amazon.com/images/M/MV5BNzA3ZjZlNzYtMTdjMy00NjMzLTk5ZGYtMTkyYzNiOGM1YmM3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "dlnmQbPGuls"},
+    { title: "Pulp Fiction", release_date: "1994-10-14", synopsis: "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.", duration: 154, img_url: "https://m.media-amazon.com/images/M/MV5BYTViYTE3ZGQtNDBlMC00ZTAyLTkyODMtZGRiZDg0MjA2YThkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "s7EdQ4FqbhY"},
+    { title: "Oppenheimer", release_date: "2023-07-21", synopsis: "A dramatization of the life story of J. Robert Oppenheimer, the physicist who had a large hand in the development of the atomic bombs that brought an end to World War II.", duration: 181, img_url: "https://m.media-amazon.com/images/M/MV5BM2RmYmVmMzctMzc5Ny00MmNiLTgxMGUtYjk1ZDRhYjA2YTU0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", yt_id: "uYPbbksJxIg"}
   ];
 
   for (const movie of movies) {
