@@ -46,7 +46,20 @@ export default function MoviePage() {
     return acc;
   }, {});
 
-  const uniqueDates = Object.keys(sessionsByDate);
+  const allDates = Object.keys(sessionsByDate);
+
+  // Filter the amount of days of sessions that are shown
+  const uniqueDates = allDates.filter(dateString => {
+    const sessionDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+
+    return sessionDate >= today && sessionDate < nextWeek;
+  }).sort((a, b) => new Date(a) - new Date(b));
+  
 
   // Auto-select the first date if none selected
   useEffect(() => {
