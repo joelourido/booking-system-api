@@ -197,20 +197,48 @@ export const BookingModel = {
     }
   },
 
-  // Gets all booking for a given user
+  // Gets all booking info for a given user 
   async findByUser(user_id) {
     const query = `
       SELECT 
         b.booking_id,
-        b.session_id,
-        b.status,
-        b.expires_at,
         b.created_at,
-        ARRAY_AGG(bs.seat_id) as seats
+        b.expires_at,
+      
+        -- If it's PENDING but past the expiration time, show 'EXPIRED'
+        CASE 
+            WHEN b.status = 'PENDING' AND NOW() > b.expires_at THEN 'EXPIRED'
+            ELSE b.status 
+        END as status,
+
+        -- Movie and session details
+        m.title as movie_title,
+        m.img_url,
+        r.room_name as room_name,
+        sess.start_time,
+
+        -- Seat details
+        COALESCE(
+          JSON_AGG(
+            json_build_object(
+              'row', s.row, 
+              'number', s.seat_number
+            )
+          ) FILTER (WHERE s.seat_id IS NOT NULL), 
+          '[]'
+        ) as seats
+
       FROM booking b
+      JOIN session sess ON b.session_id = sess.session_id
+      JOIN movie m ON sess.movie_id = m.movie_id
+      JOIN room r ON sess.room_id = r.room_id
+      
+      -- Left Join seats so we still get the booking even if seats are deleted/empty
       LEFT JOIN booking_seat bs ON b.booking_id = bs.booking_id
+      LEFT JOIN seat s ON bs.seat_id = s.seat_id
+      
       WHERE b.user_id = $1
-      GROUP BY b.booking_id
+      GROUP BY b.booking_id, m.title, m.img_url, r.room_name, sess.start_time
       ORDER BY b.created_at DESC;
     `;
     
