@@ -47,7 +47,8 @@ CREATE TABLE booking (
 	session_id INT REFERENCES session(session_id) ON DELETE CASCADE,
 	status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	expires_at TIMESTAMP NOT NULL
+	expires_at TIMESTAMP NOT NULL,
+	seat_snapshot JSONB
 );
 
 CREATE TABLE booking_seat (

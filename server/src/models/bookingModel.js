@@ -52,17 +52,27 @@ export const BookingModel = {
         err.code = "SEAT_TAKEN";
         throw err;
       }
+      
+      // Fetch seat details for the snapshot (for expired/cancelle bookings)
+      const seatDetails = await client.query(
+        `SELECT row, seat_number FROM seat WHERE seat_id = ANY($1)`,
+        [seat_ids]
+      );
+      // Snapshot of the seats 
+      const snapshot = JSON.stringify(
+        seatDetails.rows.map(s => ({ row: s.row, number: s.seat_number }))
+      );
 
       // Create the Booking Record
       const createBookingQuery = `
-        INSERT INTO booking (user_id, session_id, expires_at)
-        VALUES ($1, $2, NOW() + INTERVAL '10 minutes')
+        INSERT INTO booking (user_id, session_id, expires_at, seat_snapshot)
+        VALUES ($1, $2, NOW() + INTERVAL '10 minutes', $3)
         RETURNING booking_id;
       `;
 
       const {
         rows: [{ booking_id }]
-      } = await client.query(createBookingQuery, [user_id, session_id]);
+      } = await client.query(createBookingQuery, [user_id, session_id, snapshot]);
 
       // Create the Booking Seat records (PENDING)
       const seatValues = seat_ids
@@ -225,6 +235,7 @@ export const BookingModel = {
               'number', s.seat_number
             )
           ) FILTER (WHERE s.seat_id IS NOT NULL), 
+          b.seat_snapshot::json,
           '[]'
         ) as seats
 
