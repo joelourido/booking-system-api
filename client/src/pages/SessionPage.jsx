@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 
 export default function SessionPage() {
   // Session id 
@@ -19,13 +19,13 @@ export default function SessionPage() {
         const token = localStorage.getItem("token");
 
         // Get session details
-        const sessionRes = await axios.get(`http://localhost:3000/api/sessions/${id}`, {
+        const sessionRes = await api.get(`/sessions/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSession(sessionRes.data);
 
         // Get seat map
-        const seatsRes = await axios.get(`http://localhost:3000/api/sessions/${id}/seats`, {
+        const seatsRes = await api.get(`/sessions/${id}/seats`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSeats(seatsRes.data);
@@ -63,7 +63,7 @@ export default function SessionPage() {
       const token = localStorage.getItem("token");
       
       // Create the PENDING booking
-      const response = await axios.post('http://localhost:3000/api/bookings', {
+      const response = await api.post('/bookings', {
         session_id: session.session_id,
         seat_ids: selectedSeats
       }, {
@@ -160,7 +160,7 @@ export default function SessionPage() {
           <div className="max-w-4xl mx-auto flex justify-between items-center">
             <div>
               <p className="text-gray-400 text-sm">Total</p>
-              <p className="text-2xl font-bold text-white">${selectedSeats.length * 12}.00</p>
+              <p className="text-2xl font-bold text-white">¥{selectedSeats.length * 1200}</p>
             </div>
             <button 
               onClick={handleBooking}

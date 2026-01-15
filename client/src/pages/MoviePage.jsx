@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 
 export default function MoviePage() {
   const { id } = useParams();
@@ -17,13 +17,13 @@ export default function MoviePage() {
         const token = localStorage.getItem("token");
         
         // Get movie details
-        const movieRes = await axios.get(`http://localhost:3000/api/movies/${id}`, {
+        const movieRes = await api.get(`/movies/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         setMovie(movieRes.data);
 
         // Get sessions (by using query param filter)
-        const sessionRes = await axios.get(`http://localhost:3000/api/sessions?movie_id=${id}`, {
+        const sessionRes = await api.get(`/sessions?movie_id=${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         

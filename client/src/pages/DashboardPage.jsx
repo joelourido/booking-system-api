@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
@@ -17,7 +17,7 @@ export default function DashboardPage() {
 
     const fetchMovies = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/movies", {
+        const response = await api.get("/movies", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMovies(response.data);

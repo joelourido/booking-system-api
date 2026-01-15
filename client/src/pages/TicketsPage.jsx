@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { useNavigate } from "react-router-dom";
 
 const STATUS_STYLES = {
@@ -29,7 +29,7 @@ export default function TicketsPage() {
     const fetchBookings = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:3000/api/bookings", {
+        const res = await api.get("/bookings", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBookings(res.data);

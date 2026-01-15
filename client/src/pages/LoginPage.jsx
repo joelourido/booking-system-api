@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginPage() {
@@ -15,7 +15,7 @@ export default function LoginPage() {
 
     try {
       // Send data to backend
-      const response = await axios.post("http://localhost:3000/api/auth/login", {
+      const response = await api.post("/auth/login", {
         email: email,
         password: password
       });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 
 export default function BookingSummaryPage() {
   // Booking ID
@@ -15,7 +15,7 @@ export default function BookingSummaryPage() {
       const token = localStorage.getItem("token");
       
       // Call the confirm endpoint
-      await axios.post(`http://localhost:3000/api/bookings/${id}/confirm`, {}, {
+      await api.post(`/bookings/${id}/confirm`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
