@@ -108,6 +108,25 @@ The Database is built on **PostgreSQL**
 - `DELETE /api/bookings/:id` - Cancel a booking (releases seats)
 - `GET /api/bookings/` - Retrieve authenticated user's bookings
 
+
+## ⏳ Booking Lifecycle & State Machine
+The application uses a strict state machine to manage seat availability.
+
+### Status Definitions
+- **PENDING:** The user has selected a seat. The seat is locked for **10 minutes** (or your specific time). No one else can book it.
+- **CONFIRMED:** "Payment" was successful. The seat is permanently sold.
+- **EXPIRED:** The user failed to confirm within the time limit. The seat is released.
+
+### Logic Flow
+```mermaid
+stateDiagram-v2
+    [*] --> PENDING : User creates booking
+    PENDING --> CONFIRMED : Payment success
+    PENDING --> EXPIRED : Timeout reached (Lazy check)
+    CONFIRMED --> [*]
+    EXPIRED --> [*]
+```
+
 # Tech Stack
 - **Frontend:** React (Vite), Tailwind CSS, Axios, React Router.
 - **Backend:** Node.js, Express.js.
@@ -118,7 +137,7 @@ The Database is built on **PostgreSQL**
 
 # Future Improvements
 - Add admin features.
-
+- Implement cancel function in the frontend.
 
 
 
