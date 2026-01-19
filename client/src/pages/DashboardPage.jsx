@@ -43,7 +43,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8 max-w-7xl mx-auto">
         {/* Left side: Title */}
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+        <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
           Now Showing
         </h1>
 
@@ -51,7 +51,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate("/tickets")}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full transition text-sm font-medium shadow-lg shadow-blue-900/20"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full transition text-sm font-medium shadow-lg shadow-blue-900/20 whitespace-nowrap"
           >
             My Tickets
           </button>
