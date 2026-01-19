@@ -36,8 +36,8 @@ function run(command) {
 }
 
 try {
-  console.log("Dropping database...");
-  run(`dropdb -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} ${DB_NAME}`);
+  console.log("Dropping database... (if it exists)");
+  run(`dropdb --if-exists -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} ${DB_NAME}`);
 
   console.log("Creating database...");
   run(`createdb -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} ${DB_NAME}`);
