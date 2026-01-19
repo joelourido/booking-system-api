@@ -8,10 +8,20 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+    // State for loading and cold-start message
+  const [loading, setLoading] = useState(false);
+  const [showWakeUp, setShowWakeUp] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
+    setShowWakeUp(false);
+
+    // Set up timer to show message if the server is offline (cold start)
+    const timer = setTimeout(() => {
+      setShowWakeUp(true);
+    }, 3000);
 
     try {
     //   Send register request
@@ -30,6 +40,11 @@ export default function RegisterPage() {
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || "Registration failed");
+    } finally {
+      // Clear the timer and reset loading state when done
+      clearTimeout(timer);
+      setLoading(false);
+      setShowWakeUp(false);
     }
   };
 
@@ -41,6 +56,17 @@ export default function RegisterPage() {
           <h2 className="text-3xl font-extrabold text-white">Create Account</h2>
           <p className="mt-2 text-gray-400">Join us to book your favorite movies</p>
         </div>
+
+        {/* --- Cold start message (only shows after 3s delay) --- */}
+        {showWakeUp && (
+          <div className="bg-blue-500/10 border border-blue-500 text-blue-400 p-4 rounded-lg text-sm text-center animate-pulse">
+            <p className="font-bold">Server Waking Up...</p>
+            <p className="mt-1">
+              This server is hosted in a free tier, it sleeps when inactive.
+              Please allow <span className="font-bold text-white">40-80 seconds</span> for the initial login.
+            </p>
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-500/10 border border-red-500 text-red-500 p-3 rounded text-sm text-center">

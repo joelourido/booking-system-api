@@ -7,12 +7,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  // State for loading and cold-start message
+  const [loading, setLoading] = useState(false);
+  const [showWakeUp, setShowWakeUp] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     // Clear previous errors
     setError("");
+    setLoading(true);
+    setShowWakeUp(false);
 
+    // Set up timer to show message if the server is offline (cold start)
+    const timer = setTimeout(() => {
+      setShowWakeUp(true);
+    }, 3000);
+    
     try {
       // Send data to backend
       const response = await api.post("/auth/login", {
@@ -29,6 +39,11 @@ export default function LoginPage() {
     } catch (err) {
       // If backend sends an error, displays it.
       setError(err.response?.data?.error || "Login failed");
+    } finally {
+      // Clear the timer and reset loading state when done
+      clearTimeout(timer);
+      setLoading(false);
+      setShowWakeUp(false);
     }
   };
 
@@ -42,6 +57,17 @@ export default function LoginPage() {
           </h2>
           <p className="mt-2 text-gray-400">Sign in to manage your bookings</p>
         </div>
+
+        {/* --- Cold start message (only shows after 3s delay) --- */}
+        {showWakeUp && (
+          <div className="bg-blue-500/10 border border-blue-500 text-blue-400 p-4 rounded-lg text-sm text-center animate-pulse">
+            <p className="font-bold">Server Waking Up...</p>
+            <p className="mt-1">
+              This server is hosted in a free tier, it sleeps when inactive.
+              Please allow <span className="font-bold text-white">40-80 seconds</span> for the initial login.
+            </p>
+          </div>
+        )}
 
         {/* Error message box */}
         {error && (
