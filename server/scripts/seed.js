@@ -91,12 +91,12 @@ async function seedSessions() {
       const movie = movies[j];
       const room = rooms[j];
 
-      // Start at 10:00
+      // Start at 10:00, 10:00 JST - 9 hours = 01:00 UTC
       let currentStartTime = new Date(date);
-      currentStartTime.setHours(10, 0, 0, 0);
+      currentStartTime.setUTCHours(1, 0, 0, 0);
 
-      // Create sessions until 22:00 of the same day
-      while (currentStartTime.getHours() <= 22 && currentStartTime.getDate() === targetDay) {
+      // Create sessions until 22:00 (which is 13:00 UTC) of the same day 
+      while (currentStartTime.getUTCHours() <= 13 && currentStartTime.getDate() === targetDay) {
         
         const endTime = new Date(currentStartTime.getTime() + movie.duration * 60000);
 
@@ -110,7 +110,7 @@ async function seedSessions() {
         totalSessions++;
         
         // Advance 3 hours
-        currentStartTime.setHours(currentStartTime.getHours() + 3);
+        currentStartTime.setUTCHours(currentStartTime.getUTCHours() + 3);
       }
     }
   }
