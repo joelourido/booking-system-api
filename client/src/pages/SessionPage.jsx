@@ -94,7 +94,7 @@ export default function SessionPage() {
   if (error) return <div className="text-red-500 text-center mt-20">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8 font-sans flex flex-col items-center">
+    <div className="min-h-screen bg-gray-900 text-white p-8 font-sans flex flex-col items-center overflow-x-hidden">
       
       {/* Header */}
       <div className="w-full max-w-4xl flex justify-between items-center mb-8">
@@ -108,45 +108,48 @@ export default function SessionPage() {
         <div className="w-full h-2 bg-gray-500 rounded-full mb-2 shadow-[0_10px_30px_rgba(255,255,255,0.1)]"></div>
         <p className="text-gray-500 text-sm tracking-widest uppercase">Screen</p>
       </div>
-
+      
       {/* Seat grid */}
-      <div className="flex flex-col gap-4 mb-12">
-        {rows.map(rowLabel => (
-          <div key={rowLabel} className="flex items-center gap-4">
-            {/* Row label */}
-            <div className="w-8 text-gray-400 font-bold text-center">{rowLabel}</div>
-            
-            {/* Seats in the row */}
-            <div className="flex gap-2">
-              {seats
-                .filter(s => s.row === rowLabel)
-                .sort((a, b) => a.seat_number - b.seat_number)
-                .map(seat => {
-                  const isSelected = selectedSeats.includes(seat.seat_id);
-                  const isTaken = seat.status === 'TAKEN';
-                  
-                  // Dynamic classes based on status
-                  let seatColor = "bg-gray-700 hover:bg-gray-600 cursor-pointer"; // Default color
-                  if (isTaken) seatColor = "bg-red-900 cursor-not-allowed opacity-50";
-                  if (isSelected) seatColor = "bg-green-500 hover:bg-green-400 shadow-[0_0_15px_rgba(34,197,94,0.5)]";
+      <div className="w-full overflow-x-auto mb-20 px-4 pb-12 flex justify-start md:justify-center">
+        <div className="flex flex-col gap-4 min-w-max mx-auto">
+          <div className="flex flex-col gap-4 mb-12">
+            {rows.map(rowLabel => (
+              <div key={rowLabel} className="flex items-center gap-4">
+                {/* Row label */}
+                <div className="w-6 md:w-8 text-gray-400 font-bold text-center">{rowLabel}</div>
+                
+                {/* Seats in the row */}
+                <div className="flex gap-1 md:gap-2">
+                  {seats
+                    .filter(s => s.row === rowLabel)
+                    .sort((a, b) => a.seat_number - b.seat_number)
+                    .map(seat => {
+                      const isSelected = selectedSeats.includes(seat.seat_id);
+                      const isTaken = seat.status === 'TAKEN';
+                      
+                      // Dynamic classes based on status
+                      let seatColor = "bg-gray-700 hover:bg-gray-600 cursor-pointer"; // Default color
+                      if (isTaken) seatColor = "bg-red-900 cursor-not-allowed opacity-50";
+                      if (isSelected) seatColor = "bg-green-500 hover:bg-green-400 shadow-[0_0_15px_rgba(34,197,94,0.5)]";
 
-                  return (
-                    <button
-                      key={seat.seat_id}
-                      onClick={() => handleSeatClick(seat)}
-                      disabled={isTaken}
-                      className={`w-10 h-10 rounded-t-lg text-xs font-medium transition-all duration-200 ${seatColor}`}
-                      title={`Row ${seat.row} Seat ${seat.seat_number}`}
-                    >
-                      {seat.seat_number}
-                    </button>
-                  );
-                })}
-            </div>
+                      return (
+                        <button
+                          key={seat.seat_id}
+                          onClick={() => handleSeatClick(seat)}
+                          disabled={isTaken}
+                          className={`w-7 h-7 md:w-10 md:h-10 rounded-t-lg text-xs font-medium transition-all duration-200 ${seatColor}`}
+                          title={`Row ${seat.row} Seat ${seat.seat_number}`}
+                        >
+                          {seat.seat_number}
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-
       {/* Legend */}
       <div className="flex gap-8 mb-8 text-sm text-gray-400">
         <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-700 rounded"></div> Available</div>
