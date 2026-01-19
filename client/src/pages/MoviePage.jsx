@@ -11,10 +11,17 @@ export default function MoviePage() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Takes the Z out of the time stamp so the time displays consistently
-  const getLocalTime = (dateString) => {
+
+  //  Manually force the server time to be treated as JST.
+  // This fixes issues where the server stores JST time but marks it as UTC (Z).
+  const getJSTDate = (dateString) => {
     if (!dateString) return new Date();
-    return new Date(dateString.replace('Z', ''));
+    
+    // Strip 'Z' from UTC time
+    const rawTime = dateString.replace('Z', '');
+    
+    // Convert the time to JST (+9H from UTC)
+    return new Date(`${rawTime}+09:00`);
   };
 
   useEffect(() => {
@@ -44,9 +51,11 @@ export default function MoviePage() {
     fetchData();
   }, [id]);
 
-  // Group sessions by date
+  // Group by the date string in JST
   const sessionsByDate = sessions.reduce((acc, session) => {
-    const dateKey = getLocalTime(session.start_time).toDateString();
+  const dateKey = getJSTDate(session.start_time).toLocaleDateString('en-US', {
+    timeZone: 'Asia/Tokyo',
+  });
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(session);
     return acc;
@@ -74,7 +83,14 @@ export default function MoviePage() {
     }
   }, [uniqueDates, selectedDate]);
 
-  const currentSessions = selectedDate ? sessionsByDate[selectedDate] : [];
+  const rawSessions = selectedDate ? sessionsByDate[selectedDate] : [];
+  const currentSessions = rawSessions.filter(session => {
+    const sessionTime = getJSTDate(session.start_time);
+    const now = new Date(); // User's current absolute time anywhere in the world
+
+    // Always hide sessions that have passed in absolute time
+    return sessionTime > now;
+  });
 
   if (loading) return <div className="text-white text-center mt-20">Loading...</div>;
   if (!movie) return <div className="text-white text-center mt-20">Movie not found</div>;
@@ -143,10 +159,11 @@ export default function MoviePage() {
                       className="group relative bg-gray-700 hover:bg-blue-600 border border-gray-600 hover:border-blue-500 rounded-xl p-4 transition-all"
                     >
                       <div className="text-lg font-bold text-white">
-                        {getLocalTime(session.start_time).toLocaleTimeString('en-US', { 
+                        {getJSTDate(session.start_time).toLocaleTimeString('en-US', { 
                           hour: '2-digit', 
                           minute: '2-digit', 
-                          hour12: false 
+                          hour12: false,
+                          timeZone: 'Asia/Tokyo' // Lock visual time to Japan
                         })}
                       </div>
                       <div className="text-xs text-gray-400 group-hover:text-blue-200 mt-1">
