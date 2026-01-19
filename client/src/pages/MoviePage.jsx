@@ -11,6 +11,13 @@ export default function MoviePage() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // If the string doesn't have 'Z' at the end, add it to force UTC conversion
+  const getLocalTime = (dateString) => {
+    if (!dateString) return new Date();
+    const utcString = dateString.endsWith('Z') ? dateString : dateString + 'Z';
+    return new Date(utcString);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,7 +47,7 @@ export default function MoviePage() {
 
   // Group sessions by date
   const sessionsByDate = sessions.reduce((acc, session) => {
-    const dateKey = new Date(session.start_time).toDateString();
+    const dateKey = getLocalTime(session.start_time).toDateString();
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(session);
     return acc;
@@ -137,7 +144,11 @@ export default function MoviePage() {
                       className="group relative bg-gray-700 hover:bg-blue-600 border border-gray-600 hover:border-blue-500 rounded-xl p-4 transition-all"
                     >
                       <div className="text-lg font-bold text-white">
-                        {new Date(session.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {getLocalTime(session.start_time).toLocaleTimeString('en-US', { 
+                          hour: '2-digit', 
+                          minute: '2-digit', 
+                          hour12: false 
+                        })}
                       </div>
                       <div className="text-xs text-gray-400 group-hover:text-blue-200 mt-1">
                         Room {session.room_id || 1}
