@@ -11,11 +11,10 @@ export default function MoviePage() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // If the string doesn't have 'Z' at the end, add it to force UTC conversion
+  // Takes the Z out of the time stamp so the time displays consistently
   const getLocalTime = (dateString) => {
     if (!dateString) return new Date();
-    const utcString = dateString.endsWith('Z') ? dateString : dateString + 'Z';
-    return new Date(utcString);
+    return new Date(dateString.replace('Z', ''));
   };
 
   useEffect(() => {
